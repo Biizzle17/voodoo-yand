@@ -1,0 +1,162 @@
+import shiffman.box2d.*;
+import org.jbox2d.collision.shapes.*;
+import org.jbox2d.common.*;
+import org.jbox2d.dynamics.*;
+
+Box2DProcessing box2d;
+ArrayList<Boundary> boundaries;
+ArrayList<ParticleSystem> systems;
+
+
+PImage fondo1, fondo2, fondo3, fondo4, fondo6, fondo7, fondo8, fondo9;
+int GameState=0, Nivelselected=0;
+void setup()
+{
+    fondo1=loadImage("FONDO.jpg");
+    fondo2=loadImage("TITULO.png");
+    fondo3=loadImage("ParedMadera.jpg");
+    fondo4=loadImage("Monito.1.png");
+    fondo6=loadImage("Level 1.png");
+    fondo7=loadImage("Level 2.png");
+    fondo8=loadImage("Level 3.png");
+    fondo9=loadImage("PLAY.png");
+    size(900,700);
+    frameRate(25);
+    fill(0,300,100);
+    textSize(35);
+    //Liquidy starts here
+    smooth();
+    box2d = new Box2DProcessing(this);
+    box2d.createWorld();
+    box2d.setGravity(0, -20);
+    systems = new ArrayList<ParticleSystem>();
+    boundaries = new ArrayList<Boundary>();
+   
+    
+    //Liquidy ends here
+    
+}
+void draw()
+{
+  if(GameState==0){
+  imageMode(CORNER);
+  image(fondo3, 0, 0, 900, 700);
+  image(fondo2, 0,0,800,600);
+  image(fondo9, 450,350, 200,204);
+  text("Presiona PLAY para continuar", 50, 600);
+ }
+     else if(GameState==1){
+       imageMode(CORNER);
+       image(fondo3, 0, 0, 900, 700);
+       fill(0,300,100);
+       textSize(60);
+       text("Seleccione nivel (1, 2 o 3)",100,350);
+       fill(0,0,200);
+     }
+     else if(GameState==2){
+      imageMode(CORNER);
+       image(fondo3,0,0,900,700);
+       noFill();
+       stroke(0);
+       rect(275,600,100,200);
+       switch(Nivelselected){
+       case 1:
+          image(fondo6,700,0,200,204);
+          image(fondo4,700,500,200,200);
+          boundaries.add(new Boundary(450,375,200,10,0.7));
+          boundaries.add(new Boundary(200,200,400,10,-0.3));
+         
+         box2d.step();
+         for(ParticleSystem system: systems){
+           system.run();
+           int n=(int) random(0,2);
+           system.addParticles(n);
+         }
+        for(Boundary wall: boundaries){
+         wall.display();
+        }
+       break;    
+     }
+     }
+     else if(GameState==3){
+       imageMode(CORNER);
+       image(fondo3,0,0,900,700);
+        noFill();
+       stroke(0);
+       rect(490,650,100,100);
+          switch(Nivelselected){
+            case 2:
+         image(fondo7,700,0,200,204);
+         image(fondo4,700,500,200,200);
+          boundaries.add(new Boundary(275,450,300,10,-0.7));
+          boundaries.add(new Boundary(450,325,200,10,0.7));
+          boundaries.add(new Boundary(200,150,400,10,-0.3)); 
+         
+         box2d.step();
+         for(ParticleSystem system: systems){
+           system.run();
+           int n=(int) random(0,2);
+           system.addParticles(n);
+         }
+        for(Boundary wall: boundaries){
+         wall.display();
+        }
+         break;
+      }
+     }
+     else if(GameState==4){
+       imageMode(CORNER);
+       image(fondo3,0,0,900,700);
+        noFill();
+       stroke(0);
+       rect(330,600,100,160);
+       switch(Nivelselected){
+         case 3:
+         image(fondo8,700,0,200,204);
+         image(fondo4,700,500,200,200);
+          boundaries.add(new Boundary(250,300,300,10,-0.7));//Barra derecha mas inclinada
+          boundaries.add(new Boundary(500,405,300,10,0.7));
+          boundaries.add(new Boundary(300,100,300,10,-0.2)); //barra derecha menos inclinada
+          boundaries.add(new Boundary(500,200,300,10,0.5)); 
+         box2d.step();
+         for(ParticleSystem system: systems){
+           system.run();
+           int n=(int) random(0,2);
+           system.addParticles(n);
+         }
+        for(Boundary wall: boundaries){
+         wall.display();
+        }
+         break;
+       }
+     }
+}
+       
+void mousePressed(){
+  if(GameState==0){
+    GameState=1;
+  }
+  if(GameState>1)systems.add(new ParticleSystem(0, new PVector(mouseX, mouseY)));
+}
+void keyPressed(){
+  if(key=='n'){
+    GameState=GameState + 1;
+    Nivelselected=Nivelselected +1;
+    
+  }
+  if(GameState==1){
+    if(key=='1'){
+      Nivelselected=1;
+      GameState=2;
+    }
+    if(key=='2'){
+      Nivelselected=2;
+      GameState=3;
+      }
+    if(key=='3'){
+      Nivelselected=3;
+      GameState=4;
+    }
+  }
+ //println(Nivelselected);
+}
